@@ -106,7 +106,7 @@ function render() {
           <thead>
               <tr>
                   <th>Name</th>
-                  <th>Email</th >
+                  <th>Email</th>
                   <th>Password</th>
                   <th>Dob</th>
                   <th>Accepted terms?</th>
