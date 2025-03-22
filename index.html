@@ -4,7 +4,6 @@
 <head>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous" />
-
     <script src="index.js" defer></script>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -18,19 +17,20 @@
         <hr />
         <form action="" id="form" onsubmit="sConsole(event)">
             <label for="name">Full Name</label>
-            <input class="form-control mt-2" placeholder="Name" type="text" name="Name" id="name" />
+            <input class="form-control mt-2" placeholder="Name" type="text" name="Name" id="name" required />
 
             <label for="email">Email Address</label>
-            <input class="form-control mt-2" placeholder="Email" type="email" name="Email" id="email" />
+            <input class="form-control mt-2" placeholder="Email" type="email" name="Email" id="email" required />
 
             <label for="password">Password</label>
-            <input class="form-control mt-2" placeholder="Password" type="password" name="Password" id="password" />
+            <input class="form-control mt-2" placeholder="Password" type="password" name="Password" id="password"
+                required />
 
             <label for="dob">Date of Birth</label>
-            <input class="form-control mt-2" placeholder="Dob" type="date" name="Dob" id="dob" />
+            <input class="form-control mt-2" placeholder="Dob" type="date" name="Dob" id="dob" required />
 
             <div class="mt-2">
-                <input class="form-check-input" type="checkbox" name="Accepted terms?" id="accept" />
+                <input class="form-check-input" type="checkbox" name="Accepted terms?" id="accept" required />
                 <label for="accept">I accept the terms and conditions</label>
             </div>
 
@@ -52,6 +52,80 @@
             <tbody id="table_body"></tbody>
         </table>
     </div>
+
+    <script>
+        function sConsole(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            const name = document.getElementById("name").value;
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+            const dob = document.getElementById("dob").value;
+            const accept = document.getElementById("accept").checked;
+
+            if (!validateAge(dob)) {
+                alert("Your age must be between 18 and 55");
+                return false;
+            }
+
+            const table_body = document.getElementById("table_body");
+            const row = table_body.insertRow();
+            row.insertCell(0).textContent = name;
+            row.insertCell(1).textContent = email;
+            row.insertCell(2).textContent = password;
+            row.insertCell(3).textContent = dob;
+            row.insertCell(4).textContent = accept ? "Yes" : "No";
+
+            const dataset = getDataset();
+            localStorage.setItem("dataset", JSON.stringify(dataset));
+            render();
+        }
+
+        function getDataset() {
+            const table = document.querySelector("table");
+            const tbody = table.tBodies[0];
+            const rows = Array.from(tbody.rows);
+            return rows.map(row => ({
+                name: row.cells[0].textContent,
+                email: row.cells[1].textContent,
+                password: row.cells[2].textContent,
+                dob: row.cells[3].textContent,
+                accepted: row.cells[4].textContent,
+            }));
+        }
+
+        function validateAge(birthday) {
+            const givenBday = new Date(birthday);
+            const currentDate = new Date();
+            const age = diff_years(currentDate, givenBday);
+            return age >= 18 && age <= 55;
+        }
+
+        function diff_years(dt2, dt1) {
+            var diff = (dt2.getTime() - dt1.getTime()) / 1000;
+            diff /= 60 * 60 * 24;
+            return Math.abs(Math.round(diff / 365.25));
+        }
+
+        window.onload = function () {
+            render();
+        };
+
+        function render() {
+            const dataset = JSON.parse(localStorage.getItem("dataset")) || [];
+            const table_body = document.getElementById("table_body");
+            table_body.innerHTML = ""; // Clear existing rows
+
+            dataset.forEach(data => {
+                const row = table_body.insertRow();
+                row.insertCell(0).textContent = data.name;
+                row.insertCell(1).textContent = data.email;
+                row.insertCell(2).textContent = data.password;
+                row.insertCell(3).textContent = data.dob;
+                row.insertCell(4).textContent = data.accepted;
+            });
+        }
+    </script>
 </body>
 
 </html>
